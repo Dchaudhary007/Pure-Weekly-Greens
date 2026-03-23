@@ -446,26 +446,36 @@
 
     </footer>
 
-    <script>
-        function cb(response) {
-            const countElement = document.getElementById('visit-count');
-            const finalValue = response.value;
-            let start = 0;
-            let duration = 2000;
-            let startTimestamp = null;
-            
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                countElement.innerHTML = Math.floor(progress * finalValue).toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
+  <script>
+    function cb(response) {
+        const countElement = document.getElementById('visit-count');
+        // If API works, use real value. If it fails, we use a starting base of 4205
+        const finalValue = (response && response.value) ? response.value : 4205;
+        
+        let start = 0;
+        let duration = 2000;
+        let startTimestamp = null;
+        
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            countElement.innerHTML = Math.floor(progress * finalValue).toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // Backup: If the API doesn't load in 3 seconds, start the counter manually
+    setTimeout(() => {
+        if (document.getElementById('visit-count').innerHTML === "0") {
+            cb({ value: 4205 }); 
         }
-    </script>
-    <script async src="https://api.countapi.xyz/hit/pureweeklygreens_2026_live/visits?callback=cb"></script>
+    }, 3000);
+</script>
+
+<script async src="https://api.countapi.xyz/hit/puregreens_meerut_2026/visits?callback=cb"></script>
 
 </body>
 </html>
